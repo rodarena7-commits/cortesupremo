@@ -403,7 +403,10 @@
                     <button class="cat-btn" onclick="openAddProductModal()" style="margin: 0;">+ Agregar Producto</button>
                 </div>
                 <div id="adminProducts" class="admin-products"></div>
-                <button class="admin-save-btn" onclick="saveAdminChanges()">Guardar Cambios</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="admin-save-btn" onclick="saveAdminChanges()">Guardar Cambios</button>
+                    <button class="admin-save-btn red" onclick="resetToOriginal()" style="background: var(--red);">Restaurar Imágenes Originales</button>
+                </div>
             </div>
         </div>
     </div>
@@ -961,6 +964,13 @@
                 showNotification(`Hora de reporte guardada: ${hour}:00`);
             } else {
                 alert('Ingresa una hora válida (0-23)');
+            }
+        }
+
+        function resetToOriginal() {
+            if (confirm('¿Estás seguro? Esto restaurará todas las imágenes a las originales.')) {
+                localStorage.removeItem('products');
+                location.reload();
             }
         }
 
