@@ -295,6 +295,10 @@
                     <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 10px;">Total a agregar:</p>
                     <p style="font-size: 1.4rem; font-weight: 700; color: var(--gold);" id="qtyDisplay">1 kg</p>
                 </div>
+                <div class="form-group">
+                    <label>¿Cómo se lo corto?</label>
+                    <input type="text" id="inputCutType" placeholder="Ej: En bifes, Fino, Grueso, etc...">
+                </div>
                 <button class="submit-btn" onclick="confirmAddToCart()">Agregar al Carrito</button>
             </div>
         </div>
@@ -366,6 +370,15 @@
                 <button onclick="checkAdminPassword()">Entrar</button>
             </div>
             <div id="adminPanel" class="admin-panel">
+                <div style="margin-bottom: 30px; background: var(--dark2); padding: 20px; border-radius: 6px;">
+                    <h4 style="color: var(--gold); margin-bottom: 15px;">Configuración</h4>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label>Hora de Envío de Reporte</label>
+                        <input type="number" id="reportHour" min="0" max="23" value="18" style="width: 80px;">
+                        <button class="admin-save-btn green" onclick="saveReportHour()" style="margin-top: 10px; width: auto;">Guardar Hora</button>
+                    </div>
+                </div>
+
                 <div style="margin-bottom: 30px; background: var(--dark2); padding: 20px; border-radius: 6px;">
                     <h4 style="color: var(--gold); margin-bottom: 15px;">Resumen de Pedidos</h4>
                     <button class="admin-save-btn green" onclick="sendDailyReport()">Enviar Resumen a Vendedor</button>
@@ -465,8 +478,9 @@
 
     <script>
         const ADMIN_PASSWORD = 'corte2026';
-        const WHATSAPP_BOT = '5491123484720';
+        const WHATSAPP_BOT = '541123484720';
         const VENDOR_WHATSAPP = '5491168688111';
+        let SEND_REPORT_HOUR = 18;
 
         let products = [
             { id: 1, name: "Bife", price: 17500, cost: 0, category: "premium", img: "https://image.qwenlm.ai/public_source/d0ebe583-d333-432d-a2fe-9c76d3a4dc11/1d67a869f-1f30-4cd3-9d80-25c5f3b7830c.png", discount: 0, outOfStock: false },
@@ -542,6 +556,7 @@
             document.getElementById('addCartTitle').textContent = `Agregar ${currentProduct.name}`;
             document.getElementById('inputKg').value = '1';
             document.getElementById('inputGr').value = '0';
+            document.getElementById('inputCutType').value = '';
             updateQtyDisplay();
             document.getElementById('addCartModal').classList.add('open');
         }
@@ -573,6 +588,7 @@
             const kg = parseInt(document.getElementById('inputKg').value) || 0;
             const gr = parseInt(document.getElementById('inputGr').value) || 0;
             const totalGr = kg * 1000 + gr;
+            const cutType = document.getElementById('inputCutType').value.trim();
 
             if (totalGr === 0) {
                 alert('Ingresa una cantidad mayor a 0');
@@ -582,8 +598,9 @@
             const existing = cart.find(c => c.id === currentProduct.id);
             if (existing) {
                 existing.qty += totalGr;
+                if (cutType) existing.cutType = cutType;
             } else {
-                cart.push({ ...currentProduct, qty: totalGr });
+                cart.push({ ...currentProduct, qty: totalGr, cutType: cutType });
             }
 
             updateCartUI();
@@ -699,7 +716,7 @@
             let mensaje = `*NUEVO PEDIDO*%0A%0A*Cliente:* ${nombre}%0A*Teléfono:* ${telefono}%0A*Dirección:* ${direccion}%0A*Entrega:* ${fecha.split('-').reverse().join('/')} ${hora}%0A%0A*PRODUCTOS:%0A`;
             cart.forEach(item => {
                 const p = item.discount > 0 ? item.price * (1 - item.discount / 100) : item.price;
-                mensaje += `• ${item.name} x ${formatQty(item.qty)} - $${Math.round(p * item.qty / 1000).toLocaleString('es-AR')}%0A`;
+                mensaje += `• ${item.name} x ${formatQty(item.qty)}${item.cutType ? ' - ' + item.cutType : ''} - $${Math.round(p * item.qty / 1000).toLocaleString('es-AR')}%0A`;
             });
             mensaje += `%0A*TOTAL: $${Math.round(total).toLocaleString('es-AR')}*%0A%0A${notas ? '*Notas: ' + notas + '*' : ''}`;
 
@@ -936,6 +953,17 @@
             window.open(`https://wa.me/${VENDOR_WHATSAPP}?text=${msg}`, '_blank');
         }
 
+        function saveReportHour() {
+            const hour = parseInt(document.getElementById('reportHour').value);
+            if (hour >= 0 && hour <= 23) {
+                SEND_REPORT_HOUR = hour;
+                localStorage.setItem('reportHour', hour);
+                showNotification(`Hora de reporte guardada: ${hour}:00`);
+            } else {
+                alert('Ingresa una hora válida (0-23)');
+            }
+        }
+
         window.addEventListener('scroll', () => {
             document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
         });
@@ -961,6 +989,16 @@
             loadProducts();
             renderProducts();
 
+            // Cargar hora guardada de envío de reporte
+            const savedHour = localStorage.getItem('reportHour');
+            if (savedHour) {
+                SEND_REPORT_HOUR = parseInt(savedHour);
+                document.getElementById('reportHour').value = SEND_REPORT_HOUR;
+            }
+
+            // Verificar si es hora de enviar reporte automático
+            checkAutoSendReport();
+
             // Register Service Worker for PWA
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(err => {
@@ -968,6 +1006,19 @@
                 });
             }
         });
+
+        function checkAutoSendReport() {
+            setInterval(() => {
+                const now = new Date();
+                if (now.getHours() === SEND_REPORT_HOUR && now.getMinutes() === 0) {
+                    const today = new Date().toISOString().split('T')[0];
+                    const orders = JSON.parse(localStorage.getItem('dailyOrders_' + today) || '[]');
+                    if (orders.length > 0) {
+                        sendDailyReport();
+                    }
+                }
+            }, 60000);
+        }
     </script>
 </body>
 </html>
