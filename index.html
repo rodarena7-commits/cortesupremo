@@ -251,12 +251,6 @@
             <h2>Selección Premium</h2>
             <p>Cada corte es seleccionado cuidadosamente para garantizar la máxima calidad</p>
         </div>
-        <div class="categories">
-            <button class="cat-btn active" onclick="filterCategory(event)">Todos</button>
-            <button class="cat-btn" onclick="filterCategory(event)">Premium</button>
-            <button class="cat-btn" onclick="filterCategory(event)">Para Asado</button>
-            <button class="cat-btn" onclick="filterCategory(event)">Uso Diario</button>
-        </div>
         <div class="products-grid" id="productsGrid"></div>
     </section>
 
@@ -515,10 +509,9 @@
             return `${kg} kg ${gr} gr`;
         }
 
-        function renderProducts(cat = 'todos') {
+        function renderProducts() {
             const grid = document.getElementById('productsGrid');
-            let filtered = cat === 'todos' ? products : products.filter(p => p.category === cat);
-            filtered = filtered.filter(p => !p.outOfStock);
+            let filtered = products.filter(p => !p.outOfStock);
             grid.innerHTML = filtered.map(p => {
                 const item = cart.find(c => c.id === p.id);
                 const finalPrice = p.discount > 0 ? p.price * (1 - p.discount / 100) : p.price;
@@ -543,12 +536,6 @@
             }).join('');
         }
 
-        function filterCategory(e) {
-            const cat = e.target.textContent.toLowerCase();
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            renderProducts(cat === 'todos' ? 'todos' : cat);
-        }
 
         function openAddCartModal(id) {
             currentProduct = products.find(p => p.id === id);
@@ -611,13 +598,13 @@
         }
 
         function updateCartUI() {
-            const count = cart.reduce((s, i) => s + (i.qty / 1000), 0);
+            const count = cart.length;
             const total = cart.reduce((s, i) => {
                 const p = i.discount > 0 ? i.price * (1 - i.discount / 100) : i.price;
                 return s + (p * i.qty / 1000);
             }, 0);
 
-            document.getElementById('cartCount').textContent = count.toFixed(1).replace('.', ',');
+            document.getElementById('cartCount').textContent = count;
             document.getElementById('cartTotal').textContent = `$${Math.round(total).toLocaleString('es-AR')}`;
             document.getElementById('checkoutBtn').disabled = cart.length === 0;
 
