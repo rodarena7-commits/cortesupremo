@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Cortes Supremos">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23C8A96E' width='192' height='192'/><text x='96' y='120' font-size='80' font-weight='bold' fill='%230A0A0A' text-anchor='middle' font-family='Arial'>🥩</text></svg>">
+    <link rel="icon" type="image/png" href="cortesupremo.png">
     <title>Carnicería Premium - Cortes de Carne</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap');
@@ -223,6 +223,12 @@
                 <a href="#nosotros">Nosotros</a>
                 <a href="#contacto">Contacto</a>
             </nav>
+            <button id="installBtn" class="cart-btn" style="display: none;" onclick="installPWA()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Instalar
+            </button>
             <button class="cart-btn" onclick="toggleCart()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
@@ -469,27 +475,27 @@
         const VENDOR_WHATSAPP = '5491168688111';
 
         let products = [
-            { id: 1, name: "Bife", price: 17500, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Bife", discount: 0, outOfStock: false },
-            { id: 2, name: "Lomo", price: 23500, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/C8A96E/000000?text=Lomo", discount: 0, outOfStock: false },
-            { id: 3, name: "Asado", price: 17500, cost: 0, category: "asado", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Asado", discount: 0, outOfStock: false },
-            { id: 4, name: "Vacío", price: 18500, cost: 0, category: "asado", img: "https://via.placeholder.com/400x300/6B1828/FFFFFF?text=Vacio", discount: 0, outOfStock: false },
-            { id: 5, name: "Matambre", price: 16500, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Matambre", discount: 0, outOfStock: false },
-            { id: 6, name: "Entraña", price: 23500, cost: 0, category: "asado", img: "https://via.placeholder.com/400x300/C8A96E/000000?text=Entrania", discount: 0, outOfStock: false },
-            { id: 7, name: "Falda", price: 11900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Falda", discount: 0, outOfStock: false },
-            { id: 8, name: "Paleta", price: 18500, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/6B1828/FFFFFF?text=Paleta", discount: 0, outOfStock: false },
-            { id: 9, name: "Palomita", price: 18500, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/C8A96E/000000?text=Palomita", discount: 0, outOfStock: false },
-            { id: 10, name: "Roast Beef", price: 18500, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Roast+Beef", discount: 0, outOfStock: false },
-            { id: 11, name: "Espinazo", price: 3000, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/6B1828/FFFFFF?text=Espinazo", discount: 0, outOfStock: false },
-            { id: 12, name: "Puchero", price: 11900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Puchero", discount: 0, outOfStock: false },
-            { id: 13, name: "Tapa de Asado", price: 17900, cost: 0, category: "asado", img: "https://via.placeholder.com/400x300/C8A96E/000000?text=Tapa+Asado", discount: 0, outOfStock: false },
-            { id: 14, name: "Cogotera", price: 9900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Cogotera", discount: 0, outOfStock: false },
-            { id: 15, name: "Carnaza Común", price: 15900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/6B1828/FFFFFF?text=Carnaza", discount: 0, outOfStock: false },
-            { id: 16, name: "Tapa de Nalga", price: 17900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Tapa+Nalga", discount: 0, outOfStock: false },
-            { id: 17, name: "Nalga", price: 20900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/C8A96E/000000?text=Nalga", discount: 0, outOfStock: false },
-            { id: 18, name: "Peceto", price: 23500, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Peceto", discount: 0, outOfStock: false },
-            { id: 19, name: "Bola de Lomo", price: 19900, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/C8A96E/000000?text=Bola+Lomo", discount: 0, outOfStock: false },
-            { id: 20, name: "Tortuguita", price: 18500, cost: 0, category: "premium", img: "https://via.placeholder.com/400x300/8B2035/FFFFFF?text=Tortuguita", discount: 0, outOfStock: false },
-            { id: 21, name: "Cuadrada", price: 19900, cost: 0, category: "diario", img: "https://via.placeholder.com/400x300/6B1828/FFFFFF?text=Cuadrada", discount: 0, outOfStock: false }
+            { id: 1, name: "Bife", price: 17500, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 2, name: "Lomo", price: 23500, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 3, name: "Asado", price: 17500, cost: 0, category: "asado", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 4, name: "Vacío", price: 18500, cost: 0, category: "asado", img: "https://images.unsplash.com/photo-1555939594-58d7cb561404?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 5, name: "Matambre", price: 16500, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1600503453585-c6170a786330?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 6, name: "Entraña", price: 23500, cost: 0, category: "asado", img: "https://images.unsplash.com/photo-1588137921529-46f1c3a90033?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 7, name: "Falda", price: 11900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1618164436241-4473940571f2?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 8, name: "Paleta", price: 18500, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1555939594-58d7cb561404?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 9, name: "Palomita", price: 18500, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 10, name: "Roast Beef", price: 18500, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 11, name: "Espinazo", price: 3000, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 12, name: "Puchero", price: 11900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1588137921529-46f1c3a90033?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 13, name: "Tapa de Asado", price: 17900, cost: 0, category: "asado", img: "https://images.unsplash.com/photo-1555939594-58d7cb561404?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 14, name: "Cogotera", price: 9900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 15, name: "Carnaza Común", price: 15900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 16, name: "Tapa de Nalga", price: 17900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 17, name: "Nalga", price: 20900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1588137921529-46f1c3a90033?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 18, name: "Peceto", price: 23500, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 19, name: "Bola de Lomo", price: 19900, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 20, name: "Tortuguita", price: 18500, cost: 0, category: "premium", img: "https://images.unsplash.com/photo-1555939594-58d7cb561404?w=400&h=300&fit=crop", discount: 0, outOfStock: false },
+            { id: 21, name: "Cuadrada", price: 19900, cost: 0, category: "diario", img: "https://images.unsplash.com/photo-1618164436241-4473940571f2?w=400&h=300&fit=crop", discount: 0, outOfStock: false }
         ];
 
         let cart = [];
@@ -611,7 +617,7 @@
                 return s + (p * i.qty / 1000);
             }, 0);
 
-            document.getElementById('cartCount').textContent = Math.round(count * 1000 / 100);
+            document.getElementById('cartCount').textContent = count.toFixed(1).replace('.', ',');
             document.getElementById('cartTotal').textContent = `$${Math.round(total).toLocaleString('es-AR')}`;
             document.getElementById('checkoutBtn').disabled = cart.length === 0;
 
@@ -946,6 +952,23 @@
         window.addEventListener('scroll', () => {
             document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
         });
+
+        let installPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installPrompt = e;
+            document.getElementById('installBtn').style.display = 'flex';
+        });
+
+        function installPWA() {
+            if (!installPrompt) return;
+            installPrompt.prompt();
+            installPrompt.userChoice.then(() => {
+                installPrompt = null;
+                document.getElementById('installBtn').style.display = 'none';
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             loadProducts();
